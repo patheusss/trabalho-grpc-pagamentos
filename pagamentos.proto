@@ -1,0 +1,57 @@
+// =============================================================
+//  CONTRATO gRPC  —  Sistema de Pagamentos (Fintech)  —  versão Java
+//  O contrato é IDÊNTICO ao da versão Python; mudam apenas as
+//  3 "options" abaixo, que dizem ao gerador Java onde colocar
+//  as classes geradas.
+// =============================================================
+syntax = "proto3";
+
+package pagamentos;
+
+option java_multiple_files = true;             // uma classe por arquivo
+option java_package = "com.pagamentos.grpc";   // pacote das classes geradas
+option java_outer_classname = "PagamentosProto";
+
+// -------------------------------------------------------------
+//  O SERVIÇO: os métodos remotos que o servidor expõe.
+// -------------------------------------------------------------
+service PagamentoService {
+  rpc ProcessarPagamento (PagamentoRequest) returns (PagamentoResponse);
+  rpc ConsultarSaldo (SaldoRequest) returns (SaldoResponse);
+}
+
+// -------------------------------------------------------------
+//  AS MENSAGENS (estruturas de dados serializadas na rede).
+// -------------------------------------------------------------
+message PagamentoRequest {
+  string id_transacao  = 1;
+  string conta_origem  = 2;
+  string conta_destino = 3;
+  double valor         = 4;
+  string moeda         = 5;
+}
+
+message PagamentoResponse {
+  string id_transacao   = 1;
+  Status status         = 2;
+  string mensagem       = 3;
+  double saldo_restante = 4;
+  string data_hora      = 5;
+}
+
+message SaldoRequest {
+  string conta = 1;
+}
+
+message SaldoResponse {
+  string conta = 1;
+  double saldo = 2;
+  string moeda = 3;
+}
+
+enum Status {
+  STATUS_DESCONHECIDO = 0;
+  APROVADO            = 1;
+  SALDO_INSUFICIENTE  = 2;
+  CONTA_INVALIDA      = 3;
+}
